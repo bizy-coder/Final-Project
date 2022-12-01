@@ -1,7 +1,6 @@
 from helper import *
-import pysat
 from pysat.examples.rc2 import RC2
-from pysat.formula import WCNF
+from pysat.formula import CNF, WCNF
 
 
 def get_sat(g):
@@ -15,9 +14,9 @@ def get_sat(g):
 def get_wcnf(g):
     s = get_sat(g)
     # These are required
-    hard = pysat.formula.CNF(from_clauses=s)
+    hard = CNF(from_clauses=s)
     # We want to maximize the number of true variables
-    soft = pysat.formula.CNF(from_clauses=[[x] for x in range(1, size + 1)])
+    soft = CNF(from_clauses=[[x] for x in range(1, size + 1)])
     wcnf = WCNF()
     # print(hard.clauses)
     # print(soft.clauses)
@@ -39,7 +38,7 @@ def output(wcnf):
 
 size = 100
 p = 0.1
-m = 300
+m = 2000
 
 total = []
 n = 100
