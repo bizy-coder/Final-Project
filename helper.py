@@ -41,7 +41,7 @@ def random_graph_num_edges(n, m):
 
 
 def random_graph_prob_edges(n, p):
-    # Create the graph
+    # Create simple graph
     G = nx.Graph()
 
     # Add the vertices
@@ -95,6 +95,27 @@ def adj_to_networkx(g):
             G.add_edge(u, v)
 
     return G
+
+
+def valid(g, leaves, inner, debug=False):
+    if debug:
+        print("leaves: ", leaves)
+        print("inner: ", inner)
+
+    # check if inner is connected
+    if not nx.is_connected(g.subgraph(inner)):
+        # print("inner is not connected")
+        # print(g.subgraph(inner).edges)
+        # err
+        return False
+
+    # All leaves must be connected to inner
+    for v in leaves:
+        if debug:
+            print(v, set(g.neighbors(v)), set(g.neighbors(v)).intersection(inner))
+        if not set(g.neighbors(v)).intersection(inner):
+            return False
+    return True
 
 
 def output_graph(g, file):
@@ -166,6 +187,11 @@ def visualize_sol(g, sol_graph, display_unused_edges=False):
         nx.draw(sol_graph, node_color=node_colors)
 
     plt.show()
+
+
+def is_spanning_tree(g, tree):
+    # Check if the tree is a spanning tree of g
+    return len(tree) == len(g) and nx.is_connected(tree)
 
 
 def num_leaves(G):
