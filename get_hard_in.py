@@ -23,11 +23,35 @@ def get_diff(g):
     return num_leaves(opt) - num_leaves(basic)
 
 
-for g in list(read_hard_file("test.txt"))[1:]:
-    x = get_diff(g)
-    print([g.degree(x) for x in g.nodes()])
-    if x > 3:
-        write_graph_to_file(g, f"diff={x}", f"hard_in{x}.txt")
+def enhance_g(g, k):
+    curr_diff = get_diff(g)
+    while len(g.edges()) < 2000:
+        # Generate 10 random edges
+        edges = []
+        for _ in range(k):
+            edge = list(g.edges())[0]
+            while edge not in g.edges() and edge not in edges and edge[0] != edge[1]:
+                a = random.choice(list(g.nodes()))
+                b = random.choice(list(g.nodes()))
+                edge = (a, b)
+                edges.append(edge)
+        g.add_edges_from(edges)
+        new_diff = get_diff(g)
+        if new_diff >= curr_diff:
+            curr_diff = new_diff
+            print("New diff:", curr_diff)
+            print("New edges:", edges)
+        else:
+            g.remove_edges_from(edges)
+    return g
+
+
+for g in list(read_hard_file("hard_in4.txt"))[1:]:
+    # x = get_diff(g)
+    enhance_g(g, 20)
+    # print([g.degree(x) for x in g.nodes()])
+    # if x > 3:
+    #     write_graph_to_file(g, f"diff={x}", f"hard_in{x}.txt")
 
 
 # if __name__ == "__main__":
