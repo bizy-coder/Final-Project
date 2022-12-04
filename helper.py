@@ -196,3 +196,120 @@ def is_spanning_tree(g, tree):
 
 def num_leaves(G):
     return sum(1 for u in G.nodes if G.degree(u) == 1)
+
+
+import os
+
+
+def write_graph_to_file(graph, comment="", filename="hard_graph.txt"):
+    # Create the file if it doesn't exist
+    if not os.path.exists(filename):
+        open(filename, "w").close()
+
+    with open(filename, "a") as f:
+        # Append the number of vertices and edges in the graph
+        f.write(
+            str(graph.number_of_nodes())
+            + " "
+            + str(graph.number_of_edges())
+            + f"#{comment}\n"
+        )
+
+        # Append the edges in the graph
+        for edge in graph.edges():
+            f.write(str(edge[0]) + " " + str(edge[1]) + "\n")
+
+
+# List of possible random distributions
+def random_distribution_choice(k):
+    for _ in range(1):
+        distributions = [
+            "uniform",
+            "normal",
+            "triangular",
+            "exponential",
+            "log-normal",
+            "bimodal",
+            "bimodal",
+            "bimodal",
+            "bimodal",
+        ]
+        distribution = random.choice(distributions)
+
+        # Generate a list of 100 random numbers between 2 and 30 using the chosen distribution
+        numbers = []
+        if distribution == "uniform":
+            numbers = [random.uniform(2, 30) for _ in range(k)]
+        elif distribution == "normal":
+            numbers = [random.normalvariate(12, 8) for _ in range(k)]
+        elif distribution == "triangular":
+            numbers = [random.triangular(2, 30, 10) for _ in range(k)]
+        elif distribution == "exponential":
+            numbers = [random.expovariate(1 / 20) + 2 for _ in range(k)]
+        elif distribution == "log-normal":
+            numbers = [random.lognormvariate(0, 0.5) * 10 + 1 for _ in range(k)]
+        elif distribution == "bimodal":
+            flag = True
+            while flag:
+                flag = False
+                # Choose two random peaks
+                peak1 = random.uniform(1.2, 6) * random.uniform(1.2, 5)
+                peak2 = random.uniform(1.2, 6) * random.uniform(1.2, 5)
+
+                # Choose a random standard deviation
+                std = random.uniform(1, 5)
+
+                # Generate a list of 100 random numbers between 2 and 30 using the chosen distribution
+                # small peak weight
+                r = random.uniform(0, 1)
+                numbers = [
+                    random.normalvariate(peak1, std)
+                    if random.random() < r
+                    else random.normalvariate(peak2, std)
+                    for _ in range(k)
+                ]
+                distribution = f"bimodal p1={peak1} p2={peak2} std={std}, r={r}"
+
+                if sum(numbers) / len(numbers) > 20:
+                    flag = True
+
+        # Make all numbers between 2 and 30
+        numbers = [max(2, min(60, n)) for n in numbers]
+
+        # Round all numbers to the nearest integer
+        numbers = [round(n) for n in numbers]
+
+        # print(distribution, min(numbers), max(numbers), sum(numbers) / len(numbers))
+    return numbers, distribution
+
+
+def read_hard_file(filename):
+    with open(filename, "r") as f:
+        # Read the number of graphs
+        num_graphs = int(f.readline())
+
+        for i in range(num_graphs):
+            # # Read the number of vertices and edges
+            # n, m = map(int, f.readline().split())
+
+            # # Create a new graph
+            # G = nx.Graph()
+
+            # # Add all the vertices to the graph
+            # G.add_nodes_from(range(n))
+
+            m = int(f.readline())
+            G = nx.Graph()
+            # # Read and add all the edges to the graph
+            for j in range(m):
+                u, v = map(int, f.readline().split())
+                G.add_edge(u, v)
+
+            yield G
+
+
+if __name__ == "__main__":
+    # for _ in range(10):
+    #     g = random_graph_num_edges(10, 20)
+    #     write_graph_to_file(g, f"test{_}")
+    random_distribution_choice(100)

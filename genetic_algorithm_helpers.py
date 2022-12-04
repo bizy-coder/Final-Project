@@ -128,6 +128,7 @@ def combine2(g, tree1, tree2):
 
     return st1, st2
 
+
 def mutate(g, tree, n):
     # Add n edges to the tree
     i = 0
@@ -139,14 +140,19 @@ def mutate(g, tree, n):
         if u != v and v not in tree[u]:
             tree.add_edge(u, v)
             i += 1
-    
+
     # Remove edges to eliminate cycles
-    cycles = list(nx.simple_cycles(tree))
-    for cycle in cycles:
-        tree.remove_edge(cycle[0], cycle[1])
-    
+    while nx.cycle_basis(tree):
+        # Choose random edge in the cycle
+        cycle = nx.cycle_basis(tree)[0]
+        u = cycle[0]
+        v = cycle[1]
+
+        tree.remove_edge(u, v)
+
     return tree
-    
+
+
 if __name__ == "__main__":
     g = random_graph_num_edges(10, 30)
     s1 = generate_random_spanning_tree(g)

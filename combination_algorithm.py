@@ -13,10 +13,9 @@ def get_all_starts(g):
     lst.append(pure_greedy(g))
 
     for starting_point in g.nodes:
-        lst.append(greedy_distance_based(g, starting_point))
+        # lst.append(greedy_distance_based(g, starting_point))
         lst.append(bfs_spanning_tree(g, starting_point, random_bfs_order))
-        lst.append(bfs_spanning_tree(g, starting_point, greedy_bfs_order))
-
+        lst.append(greedy_distance_based(g, starting_point, lambda x: x))
     return lst
 
 
@@ -29,12 +28,12 @@ def test_heuristics(g):
 
     # Add the algorithm name and result to the list as a tuple
     lst.append(("Solis-OBA", solis_oba(g)))
-    # lst.append(("Pure greedy", pure_greedy(g)))
+    lst.append(("Pure greedy", pure_greedy(g)))
 
     for starting_point in list(g.nodes()):
-        lst.append(
-            ("Greedy distance-based bfs", greedy_distance_based(g, starting_point))
-        )
+        # lst.append(
+        #     ("Greedy distance-based bfs", greedy_distance_based(g, starting_point))
+        # )
 
         lst.append(
             (
@@ -43,21 +42,21 @@ def test_heuristics(g):
             )
         )
 
-        lst.append(("Pure greedy", pure_greedy(g, starting_point)))
+        # lst.append(("Pure greedy", pure_greedy(g, starting_point)))
 
-        lst.append(
-            (
-                "BFS spanning tree with random order",
-                bfs_spanning_tree(g, starting_point, random_bfs_order),
-            )
-        )
+        # lst.append(
+        #     (
+        #         "BFS spanning tree with random order",
+        #         bfs_spanning_tree(g, starting_point, random_bfs_order),
+        #     )
+        # )
 
-        lst.append(
-            (
-                "BFS spanning tree with greedy order",
-                bfs_spanning_tree(g, starting_point, greedy_bfs_order),
-            )
-        )
+        # lst.append(
+        #     (
+        #         "BFS spanning tree with greedy order",
+        #         bfs_spanning_tree(g, starting_point, greedy_bfs_order),
+        #     )
+        # )
 
     # Sort the list by the number of leaves in the tree
     lst.sort(key=lambda x: num_leaves(x[1]), reverse=True)
@@ -70,16 +69,70 @@ def test_heuristics(g):
     return lst
 
 
+def genetic_solve(g, pop, iter, combines, mutation_rate, best=None):
+    starts = get_all_starts(g)
+    sort_by_num_leaves(starts)
+    starts = starts[:pop]
+
+    # Randomly choose 20 pairs of trees to combine (weight by number of leaves)
+    for i in range(iter):
+        pairs = []
+        for _ in range(combines):
+            pairs.append(
+                random.choices(starts, weights=[num_leaves(x) for x in starts], k=2)
+            )
+
+        for pair in pairs:
+            starts.append(combine1(g, [pair[0], pair[1]]))
+            starts.extend(combine2(g, pair[0], pair[1]))
+
+        # print(starts)
+        sort_by_num_leaves(starts)
+        # starts = starts[:pop]
+
+        print("Iteration", i, "best:", num_leaves(starts[0]))
+        # Mutate each tree
+        for i in range(len(starts)):
+            starts[i] = mutate(
+                g, starts[i], int(mutation_rate * random.random() * len(g))
+            )
+
+        if any(not is_spanning_tree(g, x) for x in starts):
+            print("Invalid tree")
+            break
+
+        if best:
+            if num_leaves(starts[0]) == best:
+                break
+    return starts[0]
+
+
+def basic_solve(g, opt = None):
+    starts = get_all_starts(g)
+    sort_by_num_leaves(starts)
+    if opt != None and num_leaves(starts[0]) == opt:
+        return starts[0]
+    # print("Best starts:", num_leaves(starts[0]), num_leaves(starts[1]))
+    updated = []
+    for start in starts:
+        updated.append(one_local_search(g, start))
+    sort_by_num_leaves(updated)
+    # print("Best updated:", num_leaves(updated[0]), num_leaves(updated[1]))
+    return updated[0]
+
+
 if __name__ == "__main__":
     for _ in range(10):
-        g = random_graph_num_edges(100, 500)
+        g = random_graph_num_edges(50, 200)
 
         opt = sat_solve(g)
         # print(opt)
         print("OPTIMAL IS:", num_leaves(opt), is_spanning_tree(g, opt), "\n")
         # visualize_graph(opt)
-        lst = test_heuristics(g)
-        for x in lst:
-            print(x[0], num_leaves(x[1]))
+        # lst = test_heuristics(g)
+        # for x in lst:
+        #     print(x[0], num_leaves(x[1]))
+        # genetic_solve(g, 60, 20, 20, 0.1, num_leaves(opt))
+        basic_solve(g)
 
         print("\n\n")
