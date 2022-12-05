@@ -6,7 +6,7 @@ from genetic_algorithm_helpers import *
 from sat_sol import *
 
 
-def get_all_starts(g, skip=1):
+def get_all_starts(g, opt, skip=1):
     lst = []
 
     lst.append(solis_oba(g))
@@ -17,9 +17,11 @@ def get_all_starts(g, skip=1):
         # lst.append(greedy_distance_based(g, starting_point))
         # lst.append(bfs_spanning_tree(g, starting_point, random_bfs_order))
         x = greedy_distance_based2(g, starting_point, lambda x: x, shortest_paths)
+        lst.append(x)
+        if opt and num_leaves(x) >= opt:
+            break
         # y = greedy_distance_based(g, starting_point, lambda x: x, shortest_paths)
         # print(num_leaves(x), num_leaves(y), nx.is_isomorphic(x, y))
-        lst.append(x)
     return lst
 
 
@@ -112,10 +114,10 @@ def genetic_solve(g, pop, iter, combines, mutation_rate, best=None):
 
 
 def basic_solve(g, opt=None):
-    starts = get_all_starts(g)
+    starts = get_all_starts(g, opt)
     # print(starts)
     sort_by_num_leaves(starts)
-    if opt != None and num_leaves(starts[0]) == opt:
+    if opt and num_leaves(starts[0]) >= opt:
         return starts[0]
     # return starts[0]
     # print("Best starts:", num_leaves(starts[0]), num_leaves(starts[1]))

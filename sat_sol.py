@@ -120,13 +120,13 @@ def output(wcnf, g):
             else:
                 c += 1
                 # pass
-                if c > 100000:
+                if c > 10000:
                     return False
     # print(c)
     return sol
 
 
-def sat_solve(g, mod=0):
+def sat_solve(g, mod=2):
     g = networkx_to_adj(g)
     wcnf = get_wcnf(g, mod)
     # print(wcnf.hard)
