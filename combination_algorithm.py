@@ -12,9 +12,9 @@ def get_all_starts(g):
     lst.append(solis_oba(g))
     lst.append(pure_greedy(g))
 
-    for starting_point in g.nodes:
+    for starting_point in list(g.nodes())[::10]:
         # lst.append(greedy_distance_based(g, starting_point))
-        lst.append(bfs_spanning_tree(g, starting_point, random_bfs_order))
+        # lst.append(bfs_spanning_tree(g, starting_point, random_bfs_order))
         lst.append(greedy_distance_based(g, starting_point, lambda x: x))
     return lst
 
@@ -23,14 +23,14 @@ def sort_by_num_leaves(lst):
     lst.sort(key=lambda x: num_leaves(x), reverse=True)
 
 
-def test_heuristics(g):
+def test_heuristics(g, skip=10):
     lst = []
 
     # Add the algorithm name and result to the list as a tuple
     lst.append(("Solis-OBA", solis_oba(g)))
     lst.append(("Pure greedy", pure_greedy(g)))
 
-    for starting_point in list(g.nodes()):
+    for starting_point in list(g.nodes())[::skip]:
         # lst.append(
         #     ("Greedy distance-based bfs", greedy_distance_based(g, starting_point))
         # )
@@ -107,7 +107,7 @@ def genetic_solve(g, pop, iter, combines, mutation_rate, best=None):
     return starts[0]
 
 
-def basic_solve(g, opt = None):
+def basic_solve(g, opt=None):
     starts = get_all_starts(g)
     sort_by_num_leaves(starts)
     if opt != None and num_leaves(starts[0]) == opt:

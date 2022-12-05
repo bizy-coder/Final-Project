@@ -286,20 +286,21 @@ def random_distribution_choice(k):
 def read_hard_file(filename):
     with open(filename, "r") as f:
         # Read the number of graphs
-        num_graphs = int(f.readline())
+        num_graphs = 1
+        # num_graphs = int(f.readline())
 
         for i in range(num_graphs):
             # # Read the number of vertices and edges
-            # n, m = map(int, f.readline().split())
+            n, m = map(int, f.readline().split()[0:2])
 
-            # # Create a new graph
-            # G = nx.Graph()
-
-            # # Add all the vertices to the graph
-            # G.add_nodes_from(range(n))
-
-            m = int(f.readline())
+            # Create a new graph
             G = nx.Graph()
+
+            # Add all the vertices to the graph
+            G.add_nodes_from(range(n))
+
+            # m = int(f.readline().strip())
+            # G = nx.Graph()
             # # Read and add all the edges to the graph
             for j in range(m):
                 u, v = map(int, f.readline().split())
