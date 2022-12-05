@@ -68,7 +68,7 @@ def get_good_starts(g, opt=None, skip=1):
     lst.append(solis_oba(g))
     lst.append(pure_greedy(g))
     lst.append(greedy_distance_based2(g))
-    
+
     if opt and max(num_leaves(x) for x in lst) >= opt:
         return lst
 

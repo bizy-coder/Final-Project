@@ -192,27 +192,15 @@ def greedy_distance_based(
     return get_sol_from_inner_vertices(g, inner)
 
 
-def greedy_distance_based2(g, start_node, distance_modifier=None, shortest_paths=None):
+def greedy_distance_based2(
+    g, start_node=None, distance_modifier=None, shortest_paths=None
+):
     inner = set()
     if shortest_paths is None:
         shortest_paths = dict(nx.shortest_path_length(g))
 
     if start_node is None:
-        min_distance = float("inf")
-        min_distance_node = None
-        for node in g.nodes():
-            dist = 0
-            for target_node in g.nodes():
-                x = min(
-                    shortest_paths[source_node][target_node]
-                    for source_node in set(g.neighbors(node))
-                )
-
-                dist += x
-
-            if dist < min_distance or dist == min_distance and node < min_distance_node:
-                min_distance = dist
-                min_distance_node = node
+        start_node = max(g, key=lambda x: len(g[x]))
 
     leaves = set([start_node])
 

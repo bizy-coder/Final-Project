@@ -3,6 +3,7 @@ from sat_sol import *
 from combination_algorithm import *
 import numpy as np
 
+
 def get_diff(g):
     # Check valid
     mst = generate_random_spanning_tree(g)
@@ -157,24 +158,29 @@ def obfuscate(tree):
     possible_edges = list(itertools.combinations(leaves, 2))
     random.shuffle(possible_edges)
 
-    while len(g.edges()) < 2000 and possible_edges:
-        for s, t in possible_edges:
-            if to_add[s] and to_add[t]:
-                g.add_edge(s, t)
-                to_add[s] -= 1
-                to_add[t] -= 1
+    for s, t in possible_edges:
+        if to_add[s] and to_add[t]:
+            g.add_edge(s, t)
+            to_add[s] -= 1
+            to_add[t] -= 1
 
     return g
 
 
 if __name__ == "__main__":
     c = 0
+    n = 100
+    factor = 1
+
     # as a list comprehension
     samples = [x for x in range(150, 2000, 50)]
 
     samples = {x: 25 for x in samples}
     while True:
         try:
+            # either 50 or 100
+            n = random.choice([50, 100])
+            factor = 1 / (100 / n)
             # n = 100
             # # Normal distribution 1
             # mu1 = 8
@@ -192,16 +198,17 @@ if __name__ == "__main__":
             # g = nx.relaxed_caveman_graph(10, 10, 0.1)
 
             # visualize_graph(g_prime)
-            size = random.choices(list(samples.keys()), weights=samples.values(), k=1)[
-                0
-            ]
+            size_choice = random.choices(
+                list(samples.keys()), weights=samples.values(), k=1
+            )[0]
+            size = size_choice * factor
+            size = int(size)
 
             g = random_graph_num_edges(n, size)
             # g = random_graph_num_edges(100, random.randint(150, 1400))
             # if random.random() < 0.7:
             #     g = random_graph_num_edges(100, 500)
             t = bad_solve(g)
-
             # t = random_tree(100)
             # while num_leaves(t) < 80:
             #     t = random_tree(100)
@@ -209,7 +216,7 @@ if __name__ == "__main__":
             # print(num_leaves(t))
 
             g = obfuscate(t)
-            st = good_solve(g, start_leaves - 4)
+            st = good_solve(g, start_leaves - factor * 4)
             end_leaves = num_leaves(st)
             # print(num_leaves(st))
             # print("")
@@ -217,21 +224,29 @@ if __name__ == "__main__":
 
             # diff = get_diff(g)
             c += 1
-            if diff > 3:
-                samples[size] += (diff - 2) ** 2 * 3
-                print("Diff:", diff)
-                if diff > 4:
+            # print(size, factor*4)
+            if diff > factor * 4 - 1:
+                samples[size_choice] += int((diff - factor * 4 + 1) ** 2 * 3)
+                print(
+                    "Diff:",
+                    diff,
+                    "End leaves:",
+                    end_leaves,
+                    "Start leaves:",
+                    start_leaves,
+                )
+
+                if diff > factor * 4:
                     write_graph_to_file(g, f"{c} in", f"hard_in{n}{diff}.txt")
                     write_graph_to_file(t, f"{c} out", f"hard_out{n}{diff}.txt")
-                    # print(f"wrote, {diff}")
+                # print(f"wrote, {diff}")
             else:
-                samples[size] -= 1
+                samples[size_choice] -= 1
                 if sum(samples.values()) == 0:
                     samples = [x for x in range(150, 2000, 50)]
                     samples = {x: 25 for x in samples}
-            c += 1
             if c % 1000 == 0:
-                print(samples)
+                print("ONE THOUSAND:", c, samples)
         except Exception as e:
             print(f"Failed", e)
             continue

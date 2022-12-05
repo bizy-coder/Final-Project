@@ -120,11 +120,11 @@ def output(wcnf, g, n):
                 # sol = get_sol_from_inner_vertices(g, inner)
                 # if is_spanning_tree(g, sol):
                 # print(num_leaves(sol), len(inner))
-                print(len(inner))
-                # outputs.append(sol)
+                # print(len(g)-len(inner))
+                outputs.append(get_sol_from_inner_vertices(g, inner))
                 k += 1
                 if k == n:
-                    return sol
+                    return outputs
             else:
                 c += 1
                 # pass
@@ -133,10 +133,11 @@ def output(wcnf, g, n):
                         return False
                     else:
                         # Pad output with last solution
-                        while k < n:
-                            sol = outputs[-1]
-                            outputs.append(sol)
-                            k += 1
+                        # while k < n:
+                        #     sol = outputs[-1]
+                        #     outputs.append(sol)
+                        #     k += 1
+                        return outputs
     # print(c)
     return outputs
 
@@ -147,7 +148,7 @@ def sat_solve(g, mod=0, n=1):
     # print(wcnf.hard)
     sol = output(wcnf, g, n)
 
-    if n == 1:
+    if n == 1 and sol:
         return sol[0]
     return sol
 
