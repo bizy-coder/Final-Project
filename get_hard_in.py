@@ -10,14 +10,14 @@ def get_diff(g):
         raise Exception("Invalid MST")
     print(g)
     start = time.time()
-    opt = sat_solve(g)
+    opt = sat_solve(g, 0)
     end = time.time()
     print("SAT time:", end - start)
     if not opt:
         print("OPT FAILED")
         return -1
     start = time.time()
-    basic = basic_solve(g)
+    basic = basic_solve(g, opt)
     end = time.time()
     print("Basic time:", end - start)
     return num_leaves(opt) - num_leaves(basic)
@@ -63,12 +63,15 @@ if __name__ == "__main__":
         try:
             n = 50
             # Normal distribution 1
-            mu1 = 4
-            sigma1 = 1
+            mu1 = 8
+            sigma1 = 3
 
             # Normal distribution 2
             mu2 = n / 2
             sigma2 = n / 10
+
+            mu2 = mu1
+            sigma2 = sigma1
 
             # Combine the two distributions
             degrees = [int(x) for x in np.random.normal(mu1, sigma1, n // 2)]
@@ -76,8 +79,16 @@ if __name__ == "__main__":
 
             degrees = [x if x > 2 else 2 for x in degrees]
             degrees = [x if x < n // 2 else n // 2 for x in degrees]
-            print(degrees)
-            g = nx.havel_hakimi_graph(degrees)
+            # print(degrees)
+
+            if sum(degrees) % 2 == 1:
+                degrees[0] += 1
+
+            g = nx.configuration_model(degrees)
+
+            # turn g into simple graph
+            g = nx.Graph(g)
+            g.remove_edges_from(nx.selfloop_edges(g))
 
             diff = get_diff(g)
             if diff:

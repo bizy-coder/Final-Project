@@ -120,7 +120,7 @@ def output(wcnf, g):
             else:
                 c += 1
                 # pass
-                if c > 10000:
+                if c > 100000:
                     return False
     # print(c)
     return sol

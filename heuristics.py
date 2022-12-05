@@ -138,9 +138,12 @@ def greedy_value(v, g, leaves, inner):
     )
 
 
-def greedy_distance_based(g, start_node, distance_modifier=lambda x: 1 if x > 0 else 0):
+def greedy_distance_based(
+    g, start_node, distance_modifier=lambda x: 1 if x > 0 else 0, shortest_paths=None
+):
     inner = set()
-    shortest_paths = dict(nx.shortest_path_length(g))
+    if shortest_paths is None:
+        shortest_paths = dict(nx.shortest_path_length(g))
 
     if start_node is None:
         min_distance = float("inf")
@@ -148,11 +151,9 @@ def greedy_distance_based(g, start_node, distance_modifier=lambda x: 1 if x > 0 
         for node in g.nodes():
             dist = 0
             for target_node in g.nodes():
-                x = distance_modifier(
-                    min(
-                        shortest_paths[source_node][target_node]
-                        for source_node in set(g.neighbors(node))
-                    )
+                x = min(
+                    shortest_paths[source_node][target_node]
+                    for source_node in set(g.neighbors(node))
                 )
                 dist += x
 
@@ -171,11 +172,9 @@ def greedy_distance_based(g, start_node, distance_modifier=lambda x: 1 if x > 0 
             # print(updated_nodes)
             dist = 0
             for target_node in g.nodes():
-                x = distance_modifier(
-                    min(
-                        shortest_paths[source_node][target_node]
-                        for source_node in updated_nodes
-                    )
+                x = min(
+                    shortest_paths[source_node][target_node]
+                    for source_node in updated_nodes
                 )
                 dist += x
 
@@ -189,6 +188,72 @@ def greedy_distance_based(g, start_node, distance_modifier=lambda x: 1 if x > 0 
             leaves.add(neighbor)
         leaves.remove(min_distance_node)
         inner.add(min_distance_node)
+
+    return get_sol_from_inner_vertices(g, inner)
+
+
+def greedy_distance_based2(g, start_node, distance_modifier=None, shortest_paths=None):
+    inner = set()
+    if shortest_paths is None:
+        shortest_paths = dict(nx.shortest_path_length(g))
+
+    if start_node is None:
+        min_distance = float("inf")
+        min_distance_node = None
+        for node in g.nodes():
+            dist = 0
+            for target_node in g.nodes():
+                x = min(
+                    shortest_paths[source_node][target_node]
+                    for source_node in set(g.neighbors(node))
+                )
+
+                dist += x
+
+            if dist < min_distance or dist == min_distance and node < min_distance_node:
+                min_distance = dist
+                min_distance_node = node
+
+    leaves = set([start_node])
+
+    min_distance_to_tree = {}
+    for node in g.nodes():
+        min_distance_to_tree[node] = shortest_paths[start_node][node]
+
+    while len(inner) + len(leaves) < g.number_of_nodes():
+        # print(len(inner), len(leaves))
+        max_distance_reduction = float("inf")
+        max_reduction_node = None
+
+        for leaf in leaves:
+            neighbors = set(g.neighbors(leaf)) - inner - leaves
+            distance_reduction = -len(neighbors)
+            if neighbors:
+                for node in g.nodes() - inner - leaves:
+                    reduction = (
+                        min(shortest_paths[neighbor][node] for neighbor in neighbors)
+                        - min_distance_to_tree[node]
+                    )
+                    distance_reduction += min(0, reduction)
+
+            if (
+                distance_reduction < max_distance_reduction
+                or distance_reduction == max_distance_reduction
+                and leaf < max_reduction_node
+            ):
+                max_distance_reduction = distance_reduction
+                max_reduction_node = leaf
+
+        for neighbor in set(g.neighbors(max_reduction_node)) - leaves - inner:
+            min_distance_to_tree[neighbor] = 0
+            for node in g.nodes() - leaves - inner:
+                min_distance_to_tree[neighbor] = min(
+                    min_distance_to_tree[neighbor], shortest_paths[neighbor][node]
+                )
+
+        leaves = leaves.union(set(g.neighbors(max_reduction_node)) - leaves - inner)
+        leaves.remove(max_reduction_node)
+        inner.add(max_reduction_node)
 
     return get_sol_from_inner_vertices(g, inner)
 

@@ -12,10 +12,14 @@ def get_all_starts(g, skip=1):
     lst.append(solis_oba(g))
     lst.append(pure_greedy(g))
 
+    shortest_paths = dict(nx.shortest_path_length(g))
     for starting_point in list(g.nodes())[::skip]:
         # lst.append(greedy_distance_based(g, starting_point))
         # lst.append(bfs_spanning_tree(g, starting_point, random_bfs_order))
-        lst.append(greedy_distance_based(g, starting_point, lambda x: x))
+        x = greedy_distance_based2(g, starting_point, lambda x: x, shortest_paths)
+        # y = greedy_distance_based(g, starting_point, lambda x: x, shortest_paths)
+        # print(num_leaves(x), num_leaves(y), nx.is_isomorphic(x, y))
+        lst.append(x)
     return lst
 
 
@@ -61,10 +65,10 @@ def test_heuristics(g, skip=10):
     # Sort the list by the number of leaves in the tree
     lst.sort(key=lambda x: num_leaves(x[1]), reverse=True)
 
-    # Check if any trees are not valid
-    for name, tree in lst:
-        if not is_spanning_tree(g, tree):
-            print("Invalid tree:", name)
+    # # Check if any trees are not valid
+    # for name, tree in lst:
+    #     if not is_spanning_tree(g, tree):
+    #         print("Invalid tree:", name)
 
     return lst
 
@@ -109,13 +113,13 @@ def genetic_solve(g, pop, iter, combines, mutation_rate, best=None):
 
 def basic_solve(g, opt=None):
     starts = get_all_starts(g)
+    # print(starts)
     sort_by_num_leaves(starts)
     if opt != None and num_leaves(starts[0]) == opt:
         return starts[0]
+    # return starts[0]
     # print("Best starts:", num_leaves(starts[0]), num_leaves(starts[1]))
-    updated = []
-    for start in starts:
-        updated.append(one_local_search(g, start))
+    updated = [x if (x := one_local_search(g, start)) else g for start in starts]
     sort_by_num_leaves(updated)
     # print("Best updated:", num_leaves(updated[0]), num_leaves(updated[1]))
     return updated[0]
