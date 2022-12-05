@@ -1,7 +1,7 @@
 from helper import *
 import itertools
-from pysat.examples.rc2 import RC2
 from pysat.formula import CNF, WCNF
+from pysat.examples.rc2 import RC2Stratified
 
 """from pysat.examples.rc2 import RC2
 from pysat.formula import CNF, WCNF"""
@@ -104,34 +104,51 @@ def get_wcnf(g, mod=0):
     return wcnf
 
 
-def output(wcnf, g):
+def output(wcnf, g, n):
+    g = adj_to_networkx(g)
     out = 0
+    outputs = []
     c = 0
-
-    with RC2(wcnf, solver="g4") as rc2:
+    k = 0
+    with RC2Stratified(wcnf, solver="g4") as rc2:
         for out in rc2.enumerate():
             out = list(out)
             # print(out)
             inner = [-x - 1 for x in out if -len(g) - 1 < x < 0]
             # print(inner)
-            sol = get_sol_from_inner_vertices(g, inner)
-            if is_spanning_tree(g, sol):
-                break
+            if nx.is_connected(g.subgraph(inner)):
+                # sol = get_sol_from_inner_vertices(g, inner)
+                # if is_spanning_tree(g, sol):
+                # print(num_leaves(sol), len(inner))
+                print(len(inner))
+                # outputs.append(sol)
+                k += 1
+                if k == n:
+                    return sol
             else:
                 c += 1
                 # pass
-                if c > 10000:
-                    return False
+                if c > 1000 * (k + 1):
+                    if k == 0:
+                        return False
+                    else:
+                        # Pad output with last solution
+                        while k < n:
+                            sol = outputs[-1]
+                            outputs.append(sol)
+                            k += 1
     # print(c)
-    return sol
+    return outputs
 
 
-def sat_solve(g, mod=2):
+def sat_solve(g, mod=0, n=1):
     g = networkx_to_adj(g)
     wcnf = get_wcnf(g, mod)
     # print(wcnf.hard)
-    sol = output(wcnf, g)
+    sol = output(wcnf, g, n)
 
+    if n == 1:
+        return sol[0]
     return sol
 
 

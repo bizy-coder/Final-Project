@@ -23,8 +23,10 @@ def add(v, leaves, inner):
     leaves.add(v)
 
 
-def strategic_oscilation(g, k_step=0.01, k_max=1):
-    leaves, inner = pure_greedy(g)
+def strategic_oscilation(g, leaves=None, inner=None, k_step=0.01, k_max=1):
+    if leaves is None:
+        leaves, inner = pure_greedy(g)
+    leaves, inner = set(leaves), set(inner)
     k = k_step
 
     # print(valid(g, leaves, inner, debug=True))
