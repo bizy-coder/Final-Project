@@ -6,13 +6,13 @@ from genetic_algorithm_helpers import *
 from sat_sol import *
 
 
-def get_all_starts(g):
+def get_all_starts(g, skip=1):
     lst = []
 
     lst.append(solis_oba(g))
     lst.append(pure_greedy(g))
 
-    for starting_point in list(g.nodes())[::10]:
+    for starting_point in list(g.nodes())[::skip]:
         # lst.append(greedy_distance_based(g, starting_point))
         # lst.append(bfs_spanning_tree(g, starting_point, random_bfs_order))
         lst.append(greedy_distance_based(g, starting_point, lambda x: x))

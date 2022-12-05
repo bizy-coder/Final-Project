@@ -229,14 +229,14 @@ def bfs_spanning_tree(g, root, bfs_order=random_bfs_order):
     return T
 
 
-if __name__ == "__main__":
-    g = random_graph_num_edges(10, 20)
+# if __name__ == "__main__":
+#     g = random_graph_num_edges(10, 20)
 
-    print(type(g), len(g.nodes()), len(g.edges()))
-    # st = solis_oba(g)
-    # st = greedy_distance_based(g, 1)
-    st = bfs_spanning_tree(g, 1, greedy_bfs_order)
+#     print(type(g), len(g.nodes()), len(g.edges()))
+#     # st = solis_oba(g)
+#     # st = greedy_distance_based(g, 1)
+#     st = bfs_spanning_tree(g, 1, greedy_bfs_order)
 
-    print(type(st), len(st.nodes()), len(st.edges()))
-    # st = g
-    visualize_sol(g, st, True)
+#     print(type(st), len(st.nodes()), len(st.edges()))
+#     # st = g
+#     visualize_sol(g, st, True)

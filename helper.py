@@ -1,7 +1,8 @@
 import networkx as nx
 from matplotlib import pyplot as plt
 import random
-
+import math
+import numpy as np
 
 def yield_graphs(file):
     with open(file, "r") as f:
@@ -181,10 +182,10 @@ def visualize_sol(g, sol_graph, display_unused_edges=False):
             "black" if (sol_graph.has_edge(u, v) or sol_graph.has_edge(v, u)) else "red"
             for u, v in G.edges
         ]
-        nx.draw(G, node_color=node_colors, edge_color=edge_colors)
+        nx.draw(G, node_color=node_colors, edge_color=edge_colors, with_labels=True)
     else:
         # Draw the solution
-        nx.draw(sol_graph, node_color=node_colors)
+        nx.draw(sol_graph, node_color=node_colors, with_labels=True)
 
     plt.show()
 
