@@ -238,6 +238,7 @@ if __name__ == "__main__":
                     "Start leaves:",
                     start_leaves,
                 )
+                print(exact_sol)
 
                 if diff > factor * 4:
                     write_graph_to_file(
