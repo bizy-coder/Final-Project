@@ -2,6 +2,7 @@ from helper import *
 from sat_sol import *
 from combination_algorithm import *
 import numpy as np
+from solver import get_exact_sol
 
 
 def get_diff(g):
@@ -226,6 +227,8 @@ if __name__ == "__main__":
             c += 1
             # print(size, factor*4)
             if diff > factor * 4 - 1:
+                exact_sol = get_exact_sol(g)
+
                 samples[size_choice] += int((diff - factor * 4 + 1) ** 2 * 3)
                 print(
                     "Diff:",
@@ -237,8 +240,16 @@ if __name__ == "__main__":
                 )
 
                 if diff > factor * 4:
-                    write_graph_to_file(g, f"{c} in", f"hard_in{n}{diff}.txt")
-                    write_graph_to_file(t, f"{c} out", f"hard_out{n}{diff}.txt")
+                    write_graph_to_file(
+                        g,
+                        f"{c} {start_leaves} {exact_sol[0]} {exact_sol[1]} in",
+                        f"hard_in_Aaryan{n}{diff}.txt",
+                    )
+                    write_graph_to_file(
+                        t,
+                        f"{c} {start_leaves} {exact_sol[0]} {exact_sol[1]} out",
+                        f"hard_out_Aaryan{n}{diff}.txt",
+                    )
                 # print(f"wrote, {diff}")
             else:
                 samples[size_choice] -= 1
