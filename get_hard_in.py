@@ -227,7 +227,6 @@ if __name__ == "__main__":
             c += 1
             # print(size, factor*4)
             if diff > factor * 4 - 1:
-                exact_sol = get_exact_sol(g)
 
                 samples[size_choice] += int((diff - factor * 4 + 1) ** 2 * 3)
                 print(
@@ -240,6 +239,7 @@ if __name__ == "__main__":
                 )
 
                 if diff > factor * 4:
+                    exact_sol = get_exact_sol(g)
                     write_graph_to_file(
                         g,
                         f"{c} {start_leaves} {exact_sol[0]} {exact_sol[1]} in",
