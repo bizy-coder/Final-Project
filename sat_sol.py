@@ -1,3 +1,4 @@
+import time
 from helper import *
 import itertools
 from pysat.examples.rc2 import RC2
@@ -134,8 +135,6 @@ def sat_solve(g, mod=0):
 
     return sol
 
-
-import time
 
 if __name__ == "__main__":
     # for i in range(1):
