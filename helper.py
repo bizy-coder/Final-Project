@@ -1,8 +1,7 @@
 import networkx as nx
 from matplotlib import pyplot as plt
 import random
-import math
-import numpy as np
+
 
 def yield_graphs(file):
     with open(file, "r") as f:
@@ -148,13 +147,13 @@ def get_sol_from_inner_vertices(g, sol):
             if v in sol:
                 G.add_edge(u, v)
 
-    # Remove edges until there are no cycles
-    while nx.cycle_basis(G):
-        # Get the cycle
-        cycle = nx.cycle_basis(G)[0]
+    # # Remove edges until there are no cycles
+    # while nx.cycle_basis(G):
+    #     # Get the cycle
+    #     cycle = nx.cycle_basis(G)[0]
 
-        # Remove the edge with the highest degree
-        G.remove_edge(cycle[0], cycle[1])
+    #     # Remove the edge with the highest degree
+    #     G.remove_edge(cycle[0], cycle[1])
 
     # For all vertices not in the solution add an edge between it and one vertex in the solution
     for u in range(len(g)):
@@ -163,6 +162,9 @@ def get_sol_from_inner_vertices(g, sol):
                 if v in sol:
                     G.add_edge(u, v)
                     break
+
+    # get graph induced by inner vertices
+    # G = g.subgraph(sol.nodes())
 
     return G
 
@@ -284,15 +286,15 @@ def random_distribution_choice(k):
     return numbers, distribution
 
 
-def read_hard_file(filename):
+def read_hard_file(filename, num_graphs=1):
     with open(filename, "r") as f:
         # Read the number of graphs
-        num_graphs = 1
+        # num_graphs = 1
         # num_graphs = int(f.readline())
 
         for i in range(num_graphs):
             # # Read the number of vertices and edges
-            n, m = map(int, f.readline().split()[0:2])
+            n, m = map(int, f.readline().split("#")[0].split()[0:2])
 
             # Create a new graph
             G = nx.Graph()
