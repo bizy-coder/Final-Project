@@ -148,12 +148,12 @@ def get_sol_from_inner_vertices(g, sol):
                 G.add_edge(u, v)
 
     # # Remove edges until there are no cycles
-    # while nx.cycle_basis(G):
-    #     # Get the cycle
-    #     cycle = nx.cycle_basis(G)[0]
+    while nx.cycle_basis(G):
+        # Get the cycle
+        cycle = nx.cycle_basis(G)[0]
 
-    #     # Remove the edge with the highest degree
-    #     G.remove_edge(cycle[0], cycle[1])
+        # Remove the edge with the highest degree
+        G.remove_edge(cycle[0], cycle[1])
 
     # For all vertices not in the solution add an edge between it and one vertex in the solution
     for u in range(len(g)):
@@ -175,6 +175,7 @@ def visualize_sol(g, sol_graph, display_unused_edges=False):
     else:
         G = g
 
+    pos = nx.spring_layout(sol_graph)
     # Visualize the graph, coloring leaves red and inner vertices green
     node_colors = ["red" if sol_graph.degree(u) == 1 else "green" for u in G.nodes]
     # print(node_colors)
@@ -184,10 +185,12 @@ def visualize_sol(g, sol_graph, display_unused_edges=False):
             "black" if (sol_graph.has_edge(u, v) or sol_graph.has_edge(v, u)) else "red"
             for u, v in G.edges
         ]
-        nx.draw(G, node_color=node_colors, edge_color=edge_colors, with_labels=True)
+        nx.draw(
+            G, pos=pos, node_color=node_colors, edge_color=edge_colors, with_labels=True
+        )
     else:
         # Draw the solution
-        nx.draw(sol_graph, node_color=node_colors, with_labels=True)
+        nx.draw(sol_graph, pos=pos, node_color=node_colors, with_labels=True)
 
     plt.show()
 
@@ -286,16 +289,23 @@ def random_distribution_choice(k):
     return numbers, distribution
 
 
-def read_hard_file(filename, num_graphs=1):
+def read_hard_file(filename):
     with open(filename, "r") as f:
         # Read the number of graphs
         # num_graphs = 1
-        # num_graphs = int(f.readline())
+        num_graphs = int(f.readline())
 
         for i in range(num_graphs):
             # # Read the number of vertices and edges
-            n, m = map(int, f.readline().split("#")[0].split()[0:2])
 
+            # if i == 45:
+            #     print(l)
+            l = f.readline()
+            # if not l.strip():
+            #     break
+            n, m = map(int, l.split())
+
+            # print(n, m)
             # Create a new graph
             G = nx.Graph()
 

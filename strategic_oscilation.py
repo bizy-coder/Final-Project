@@ -53,9 +53,7 @@ def strategic_oscilation(g, leaves=None, inner=None, k_step=0.01, k_max=1):
             last_leaves = leaves.copy()
         else:
             k = k + k_step
-            # print(leaves)
             leaves = last_leaves.copy()
-            # print(len(leaves))
             inner = last_inner.copy()
 
     return leaves, inner

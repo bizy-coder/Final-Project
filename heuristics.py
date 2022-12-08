@@ -138,6 +138,10 @@ def greedy_value(v, g, leaves, inner):
     )
 
 
+def greedy_value2(v, g, leaves, inner):
+    return len(set(g.neighbors(v) - set(inner) - set(leaves)))
+
+
 def greedy_distance_based(
     g, start_node, distance_modifier=lambda x: 1 if x > 0 else 0, shortest_paths=None
 ):

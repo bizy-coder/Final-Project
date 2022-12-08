@@ -174,7 +174,8 @@ if __name__ == "__main__":
     factor = 1
 
     # as a list comprehension
-    samples = [x for x in range(150, 2000, 50)]
+    # samples = [x for x in range(150, 2000, 50)]
+    samples = [350]
 
     samples = {x: 25 for x in samples}
     while True:
@@ -204,7 +205,7 @@ if __name__ == "__main__":
             )[0]
             size = size_choice * factor
             size = int(size)
-
+            # print(size)
             g = random_graph_num_edges(n, size)
             # g = random_graph_num_edges(100, random.randint(150, 1400))
             # if random.random() < 0.7:
@@ -215,10 +216,11 @@ if __name__ == "__main__":
             #     t = random_tree(100)
             start_leaves = num_leaves(t)
             # print(num_leaves(t))
-
+            # print(start_leaves)
             g = obfuscate(t)
             st = good_solve(g, start_leaves - factor * 4)
             end_leaves = num_leaves(st)
+            # print(end_leaves)
             # print(num_leaves(st))
             # print("")
             diff = start_leaves - end_leaves
@@ -227,9 +229,8 @@ if __name__ == "__main__":
             c += 1
             # print(size, factor*4)
             if diff > factor * 4 - 1:
-                exact_sol = get_exact_sol(g)
 
-                samples[size_choice] += int((diff - factor * 4 + 1) ** 2 * 3)
+                samples[size_choice] += int((diff - factor * 4 + 2) ** 2 * 3)
                 print(
                     "Diff:",
                     diff,
@@ -238,9 +239,10 @@ if __name__ == "__main__":
                     "Start leaves:",
                     start_leaves,
                 )
-                print(exact_sol)
 
                 if diff > factor * 4:
+                    exact_sol = get_exact_sol(g)
+                    print(exact_sol)
                     write_graph_to_file(
                         g,
                         f"{c} {start_leaves} {exact_sol[0]} {exact_sol[1]} in",

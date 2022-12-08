@@ -7,10 +7,11 @@ from sat_sol import *
 
 
 def get_best_heuristic_solve(g):
+    print(g)
     lst = []
 
-    lst.append(solis_oba(g))
-
+    # lst.append(solis_oba(g))
+    print("after solis oba")
     shortest_paths = dict(nx.shortest_path_length(g))
     for starting_point in list(g.nodes()):
         # print(starting_point)
@@ -34,21 +35,31 @@ def get_best_heuristic_solve(g):
     # print([num_leaves(x) for x in lst])
 
     new_lst = []
+    best = lst[0]
+    print(f"Best heuristic solve on {g} is", best.edges(), "with", num_leaves(best))
 
-    for g in lst[:5]:
+    for g in lst:
         # print(g)
         # Get the leaf nodes
         leaves = [x for x in g.nodes() if g.degree(x) == 1]
         # Get the internal nodes
         internal = [x for x in g.nodes() if g.degree(x) > 1]
 
-        new_leaves, new_inner = strategic_oscilation(g, leaves, internal, 0.005, 0.6)
+        new_leaves, new_inner = strategic_oscilation(g, leaves, internal, 0.05, 0.6)
 
         st = get_sol_from_inner_vertices(g, new_inner)
 
         one_local_search(g, st)
 
         new_lst.append(st)
+        if num_leaves(st) > num_leaves(best):
+            best = st
+            print(
+                f"Best heuristic solve on {g} is",
+                best.edges(),
+                "with",
+                num_leaves(best),
+            )
 
     sort_by_num_leaves(new_lst)
     # print([num_leaves(x) for x in new_lst])
