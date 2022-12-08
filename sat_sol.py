@@ -1,3 +1,4 @@
+import time
 from helper import *
 import itertools
 from pysat.formula import CNF, WCNF
@@ -233,8 +234,6 @@ def sat_solve(g, mod=0, n=1):
         return sol
     return sol
 
-
-import time
 
 if __name__ == "__main__":
 

@@ -242,7 +242,10 @@ if __name__ == "__main__":
 
                 if diff > factor * 4:
                     exact_sol = get_exact_sol(g)
+<<<<<<< HEAD
                     print(exact_sol)
+=======
+>>>>>>> 4778abbb50d1d89a29588de4f6d14704d5cd2da2
                     write_graph_to_file(
                         g,
                         f"{c} {start_leaves} {exact_sol[0]} {exact_sol[1]} in",
